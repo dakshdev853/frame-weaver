@@ -2,7 +2,7 @@ import React from 'react';
 import { Film, Upload, Image as ImageIcon, Video } from 'lucide-react';
 
 interface ViewerCanvasProps {
-  mode: 'idle' | 'image' | 'video';
+  mode: 'idle' | 'exr' | 'image' | 'video';
   currentImageUrl: string | null;
   videoUrl: string | null;
   onOpen: () => void;
@@ -11,6 +11,8 @@ interface ViewerCanvasProps {
   onDragLeave: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent) => void;
   isDragging: boolean;
+  canvasRef?: React.RefObject<HTMLCanvasElement>;
+  videoRef?: React.RefObject<HTMLVideoElement>;
 }
 
 const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
@@ -23,6 +25,8 @@ const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
   onDragLeave,
   onDrop,
   isDragging,
+  canvasRef,
+  videoRef,
 }) => {
   return (
     <div
@@ -38,7 +42,7 @@ const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
           <div className="text-center">
             <Upload size={48} className="mx-auto mb-3 text-primary animate-pulse-glow" />
             <p className="text-lg font-medium text-primary">Drop files here</p>
-            <p className="text-sm text-muted-foreground mt-1">Images or video files</p>
+            <p className="text-sm text-muted-foreground mt-1">EXR sequences or video files</p>
           </div>
         </div>
       )}
@@ -53,7 +57,7 @@ const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
             </div>
           </div>
           <div className="text-center">
-            <h1 className="text-2xl font-semibold tracking-tight">Media Viewer</h1>
+            <h1 className="text-2xl font-semibold tracking-tight">EXR Sequence Viewer</h1>
             <p className="text-muted-foreground mt-1.5 text-sm">
               Drop files here or click to open
             </p>
@@ -69,7 +73,7 @@ const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
           </div>
           <div className="flex gap-6 mt-6 text-xs text-muted-foreground/60">
             <span className="flex items-center gap-1.5">
-              <ImageIcon size={12} /> Images
+              <ImageIcon size={12} /> EXR
             </span>
             <span className="flex items-center gap-1.5">
               <Video size={12} /> Videos
@@ -81,8 +85,19 @@ const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
         </div>
       )}
 
-      {/* Image viewer */}
-      {mode === 'image' && currentImageUrl && (
+      {/* EXR viewer – WebGL canvas */}
+      {mode === 'exr' && (
+        <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+          <canvas
+            ref={canvasRef}
+            className="w-full h-full object-contain"
+            style={{ imageRendering: 'pixelated' }}
+          />
+        </div>
+      )}
+
+      {/* Image viewer fallback (if no canvasRef) */}
+      {mode !== 'exr' && mode !== 'video' && mode !== 'idle' && currentImageUrl && (
         <div className="absolute inset-0 flex items-center justify-center p-4">
           <img
             src={currentImageUrl}
@@ -97,6 +112,7 @@ const ViewerCanvas: React.FC<ViewerCanvasProps> = ({
       {mode === 'video' && videoUrl && (
         <div className="absolute inset-0 flex items-center justify-center p-4">
           <video
+            ref={videoRef}
             src={videoUrl}
             className="max-w-full max-h-full object-contain viewer-glow rounded"
             controls
