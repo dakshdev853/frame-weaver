@@ -2,7 +2,7 @@ import React from 'react';
 import { Play, Pause, Square, Upload, RotateCcw, Sun, Gauge } from 'lucide-react';
 
 interface ViewerToolbarProps {
-  mode: 'idle' | 'image' | 'video';
+  mode: 'idle' | 'exr' | 'image' | 'video';
   isPlaying: boolean;
   fps: number;
   exposure: number;
@@ -37,7 +37,7 @@ const ViewerToolbar: React.FC<ViewerToolbarProps> = ({
           Open
         </button>
 
-        {mode === 'image' && (
+        {(mode === 'exr' || mode === 'image') && (
           <div className="flex items-center gap-1 ml-4">
             <button
               onClick={onTogglePlay}
@@ -68,7 +68,7 @@ const ViewerToolbar: React.FC<ViewerToolbarProps> = ({
         )}
       </div>
 
-      {mode === 'image' && (
+      {(mode === 'exr' || mode === 'image') && (
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Sun size={14} className="text-muted-foreground" />
