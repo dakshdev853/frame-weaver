@@ -1,0 +1,432 @@
+/*
+ * viewer.css — Companion stylesheet for SinglePageViewer.tsx
+ *
+ * Dark cinematic theme inspired by DaVinci Resolve.
+ * Import this in your entry point: import './viewer.css';
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ─── Reset & Base ─────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          hsl(240, 6%, 6%);
+  --fg:          hsl(210, 20%, 92%);
+  --surface:     hsl(240, 5%, 10%);
+  --surface-alt: hsl(240, 5%, 8%);
+  --border:      hsl(240, 4%, 18%);
+  --muted:       hsl(215, 15%, 50%);
+  --primary:     hsl(213, 90%, 52%);
+  --primary-fg:  hsl(0, 0%, 100%);
+  --secondary:   hsl(240, 4%, 16%);
+  --elevated:    hsl(240, 5%, 12%);
+  --timeline-bg: hsl(240, 5%, 9%);
+  --track:       hsl(240, 4%, 14%);
+  --glow:        hsl(213, 90%, 52%);
+  --danger:      hsl(0, 72%, 51%);
+  --radius:      0.5rem;
+}
+
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.hidden-input { display: none; }
+
+/* ─── Root Layout ──────────────────────────────────────────────────── */
+.viewer-root {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.viewer-body {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+/* ─── Toolbar ──────────────────────────────────────────────────────── */
+.viewer-toolbar {
+  height: 48px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: hsla(240, 5%, 12%, 0.92);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+}
+
+.toolbar-left, .toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.playback-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 16px;
+}
+
+.fps-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.fps-input {
+  width: 48px;
+  background: var(--secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 12px;
+  text-align: center;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--fg);
+  outline: none;
+}
+.fps-input:focus { box-shadow: 0 0 0 1px var(--primary); }
+.fps-label { font-size: 12px; color: var(--muted); }
+
+.exposure-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+}
+
+.exposure-slider { width: 128px; }
+
+.exposure-value {
+  font-size: 12px;
+  font-family: 'JetBrains Mono', monospace;
+  width: 40px;
+  text-align: right;
+  color: var(--muted);
+}
+
+/* ─── Buttons ──────────────────────────────────────────────────────── */
+.btn-primary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--primary);
+  color: var(--primary-fg);
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:hover { background: hsl(213, 90%, 46%); }
+
+.btn-primary.btn-lg {
+  padding: 10px 24px;
+  font-size: 15px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  color: var(--fg);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-icon:hover { background: var(--secondary); }
+
+/* ─── Gallery Sidebar ──────────────────────────────────────────────── */
+.gallery-sidebar {
+  width: 224px;
+  border-right: 1px solid var(--border);
+  background: var(--surface-alt);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.gallery-header {
+  padding: 8px 12px;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  font-weight: 500;
+}
+
+.gallery-grid {
+  flex: 1;
+  overflow-y: auto;
+  padding: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+}
+
+.gallery-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  transition: all 0.15s;
+  opacity: 0.6;
+  outline: 1px solid var(--border);
+  background: none;
+  padding: 0;
+}
+.gallery-thumb:hover { opacity: 1; outline-color: var(--muted); }
+.gallery-thumb.active {
+  opacity: 1;
+  outline: none;
+  box-shadow: 0 0 0 2px var(--primary), 0 0 12px -2px hsla(213, 90%, 52%, 0.4);
+  transform: scale(1.02);
+}
+
+.thumb-placeholder {
+  width: 100%;
+  height: 100%;
+  background: var(--secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
+.thumb-number {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, hsla(240, 6%, 6%, 0.8), transparent);
+  padding: 2px 4px;
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: hsla(210, 20%, 92%, 0.7);
+}
+
+.thumb-name {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 4px;
+  font-size: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  color: hsla(210, 20%, 92%, 0.5);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ─── Viewport ─────────────────────────────────────────────────────── */
+.viewport {
+  flex: 1;
+  position: relative;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.drag-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 50;
+  background: hsla(213, 90%, 52%, 0.1);
+  border: 2px dashed var(--primary);
+  border-radius: 8px;
+  margin: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
+  animation: scaleIn 0.15s ease-out;
+}
+.drag-text { font-size: 18px; font-weight: 500; margin-top: 12px; }
+.drag-sub { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+.idle-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  animation: fadeIn 0.3s ease-out;
+}
+.idle-icon { color: hsla(210, 20%, 92%, 0.15); }
+.idle-badge {
+  position: relative;
+  margin-top: -28px;
+  margin-left: 56px;
+  background: var(--primary);
+  border-radius: 50%;
+  padding: 4px;
+  color: var(--primary-fg);
+  display: flex;
+}
+.idle-title {
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  margin-top: 8px;
+}
+.idle-sub { color: var(--muted); font-size: 14px; }
+.idle-formats {
+  display: flex;
+  gap: 24px;
+  margin-top: 24px;
+  font-size: 12px;
+  color: hsla(215, 15%, 50%, 0.6);
+}
+.idle-formats span { display: flex; align-items: center; gap: 6px; }
+
+.canvas-container,
+.image-container,
+.video-container {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.image-container, .video-container { padding: 16px; }
+
+.exr-canvas { width: 100%; height: 100%; object-fit: contain; }
+.image-display {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 0 60px -15px hsla(213, 90%, 52%, 0.15);
+}
+.video-display {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 0 60px -15px hsla(213, 90%, 52%, 0.15);
+}
+
+/* ─── Timeline ─────────────────────────────────────────────────────── */
+.timeline-bar {
+  height: 56px;
+  border-top: 1px solid var(--border);
+  background: hsla(240, 5%, 9%, 0.95);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.timeline-track { flex: 1; position: relative; }
+.timeline-slider { width: 100%; }
+
+.timeline-markers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2px;
+  padding: 0 4px;
+}
+
+.marker {
+  width: 2px;
+  height: 4px;
+  border-radius: 9999px;
+  background: hsla(215, 15%, 50%, 0.2);
+  transition: all 0.15s;
+}
+.marker.active { height: 8px; background: var(--primary); }
+
+.marker-label {
+  font-size: 9px;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--muted);
+}
+
+.frame-counter {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 100px;
+  text-align: right;
+}
+.frame-current { color: var(--fg); }
+.frame-sep { margin: 0 4px; }
+
+/* ─── Range Input ──────────────────────────────────────────────────── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--track);
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--primary-fg);
+  margin-top: -5px;
+}
+input[type="range"]::-moz-range-track {
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--track);
+  border: 0;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--primary);
+  border: 2px solid var(--primary-fg);
+}
+
+/* ─── Scrollbar ────────────────────────────────────────────────────── */
+.gallery-grid::-webkit-scrollbar { width: 4px; }
+.gallery-grid::-webkit-scrollbar-track { background: transparent; }
+.gallery-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 9999px; }
+
+/* ─── Animations ───────────────────────────────────────────────────── */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes scaleIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
